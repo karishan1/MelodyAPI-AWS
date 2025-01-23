@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, HTTPException
-from utils.file_handling import save_uploaded_file
-from utils.audio_processing import process_audio
-from utils.predictions import predict_instruments, get_top_predictions
+from app.utils.file_handling import save_uploaded_file
+from app.utils.audio_processing import process_audio
+from app.utils.predictions import predict_instruments, get_top_predictions
 import os
 
 app = FastAPI()

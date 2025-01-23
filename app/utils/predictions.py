@@ -1,6 +1,7 @@
 import numpy as np
 from essentia.standard import TensorflowPredict2D
 
+
 # List of instrument names corresponding to the 40 classes
 instrument_names = [
     "accordion", "acousticbassguitar", "acousticguitar", "bass", "beat", "bell", "bongo", "brass", "cello", 
@@ -15,7 +16,7 @@ def predict_instruments(embeddings: np.ndarray) -> np.ndarray:
     Predict instrument probabilities based on embeddings.
     """
     model = TensorflowPredict2D(
-        graphFilename="models/mtg_jamendo_instrument-discogs-effnet-1.pb"
+        graphFilename= "models/mtg_jamendo_instrument-discogs-effnet-1.pb"
     )
     predictions = model(embeddings)
     return predictions
