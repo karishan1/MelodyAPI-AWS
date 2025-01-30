@@ -7,7 +7,7 @@ import os
 app = FastAPI()
 @app.post("/predict/")
 async def predict_instrument(file: UploadFile):
-    file_location = None
+    file_location = None    
     try:
 
         file_location = save_uploaded_file(file)
