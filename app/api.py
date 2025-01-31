@@ -11,11 +11,8 @@ async def predict_instrument(file: UploadFile):
     try:
 
         file_location = save_uploaded_file(file)
-
         embeddings = process_audio(file_location)
-
         predictions = predict_instruments(embeddings)
-
         top_3_predictions = get_top_predictions(predictions)
 
         return {"top_3_predictions": top_3_predictions}
