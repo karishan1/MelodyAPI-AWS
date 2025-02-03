@@ -21,7 +21,7 @@ def predict_instruments(embeddings: np.ndarray) -> np.ndarray:
     predictions = model(embeddings)
     return predictions
 
-def get_top_predictions(predictions: np.ndarray, top_n: int = 3) -> list:
+def get_top_predictions(predictions: np.ndarray, top_n: int = 4) -> list:
     """
     Calculate the top N predictions with their probabilities.
     """
