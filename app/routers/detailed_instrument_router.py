@@ -6,7 +6,7 @@ import os
 
 router = APIRouter()
 
-@router.post("/detailed-predict/")
+@router.post("/detect-instruments/")
 async def detailed_instrument_analysis(file: UploadFile):
     file_location = None    
     try:
