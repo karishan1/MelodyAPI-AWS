@@ -16,7 +16,7 @@ def predict_instruments(embeddings: np.ndarray) -> np.ndarray:
     Predict instrument probabilities based on embeddings.
     """
     model = TensorflowPredict2D(
-        graphFilename= "models/mtg_jamendo_instrument-discogs-effnet-1.pb"
+        graphFilename= "models/instrument_classification_models/mtg_jamendo_instrument-discogs-effnet-1.pb"
     )
     predictions = model(embeddings)
     return predictions

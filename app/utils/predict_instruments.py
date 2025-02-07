@@ -34,7 +34,7 @@ def get_active_time_period(active_time_stamps, min_duration=2):
 def predict_instruments(embeddings: np.ndarray, threshold=0.3, time_step=1) -> list:
 
     model = TensorflowPredict2D(
-        graphFilename="models/mtg_jamendo_instrument-discogs-effnet-1.pb"
+        graphFilename="models/instrument_classification_models/mtg_jamendo_instrument-discogs-effnet-1.pb"
     )
 
     predictions = model(embeddings)
