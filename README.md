@@ -1,2 +1,1 @@
-# InstruFind
-An Instrument Detection API System
+# Music API System AWS
