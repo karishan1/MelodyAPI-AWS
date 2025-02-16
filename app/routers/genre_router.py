@@ -1,25 +1,23 @@
 from fastapi import APIRouter, UploadFile, HTTPException, File
 from app.utils.file_handling import save_uploaded_file
 from app.utils.audio_processing import process_audio
-from app.utils.predictions import predict_instruments, get_top_predictions
+from app.utils.predict_genre import get_genre_predictions, get_top_predictions
 import os
 
 router = APIRouter()
-@router.post("/predict/{predictions_num}")
-async def predict_instrument(predictions_num: int, file: UploadFile):
+@router.post("/genre/")
+async def predict_genre(file: UploadFile):
     file_location = None    
     try:
-
         file_location = save_uploaded_file(file)
 
         embeddings = process_audio(file_location)
-
-        predictions = predict_instruments(embeddings)
-
-        top_3_predictions = get_top_predictions(predictions,predictions_num)
-
-        return {"top_3_predictions": top_3_predictions}
-    
+        predictions = predict_genre(embeddings)
+        predictions = get_genre_predictions(embeddings) 
+        
+        return get_top_predictions(predictions) 
+        
+        
     except HTTPException as http_err:
         raise http_err
     
