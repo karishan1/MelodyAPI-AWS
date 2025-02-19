@@ -1,5 +1,5 @@
-# Python 3.11
-FROM python:3.11-slim
+# Use AWS Lambda Python Base Image
+FROM public.ecr.aws/lambda/python:3.11
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -9,17 +9,16 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 # Copy the requirements file
-COPY requirements.txt /app/
+COPY requirements.txt .
 
 # Install dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the project files
-COPY . /app/
+COPY . .
 
-# Expose FastAPI application port
-EXPOSE 8000
+# Install Mangum for AWS Lambda compatibility
+RUN pip install mangum
 
-# Command to run the FastAPI app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Command to run the Lambda function
+CMD ["app.main.lambda_handler"]
