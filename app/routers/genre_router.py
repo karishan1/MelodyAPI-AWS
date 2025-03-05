@@ -5,7 +5,8 @@ from app.utils.predict_genre import get_genre_predictions, get_top_predictions
 import os
 
 router = APIRouter()
-@router.post("/genre/")
+@router.post("/genre")
+
 async def predict_genre(file: UploadFile):
     file_location = None    
     try:

@@ -1,6 +1,6 @@
 import json
 import numpy as np
-from essentia.standard import TensorflowPredictEffnetDiscogs, TensorflowPredict2D
+from essentia.standard import TensorflowPredict2D
 
 instrument_names = [
     "accordion", "acousticbassguitar", "acousticguitar", "bass", "beat", "bell", "bongo", "brass", "cello", 
