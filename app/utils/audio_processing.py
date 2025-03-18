@@ -21,5 +21,5 @@ def process_audio(file_path: str) -> np.ndarray:
         graphFilename = model_path,
         output="PartitionedCall:1"
     )
-    embeddings = embedding_model(audio)
+    embeddings = embedding_model(audio) 
     return embeddings
