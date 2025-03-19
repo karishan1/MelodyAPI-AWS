@@ -22,6 +22,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 def startup_event():
+    print("Creating table")
     init_db()  # Ensure DynamoDB table exists
 
 app.include_router(instrument_router, prefix="/api", tags=["Instrument Prediction"])

@@ -8,13 +8,14 @@ app = FastAPI()
 
 dynamodb = boto3.resource(
     "dynamodb",
-    region_name="us-west-2",
+    region_name="eu-west-2",
     endpoint_url="http://localhost:8000"
 )
 
-table_name = "AudioCache"
+table_name = "Audio-Cache"
 
 def create_table():
+    table_name = "Audio-Cache"
     try:
         existing_tables = dynamodb.meta.client.list_tables()["TableNames"]
         if table_name not in existing_tables:
@@ -33,7 +34,6 @@ def init_db():
     create_table()
 
 def convert_floats_to_decimal(data):
-    """ Recursively converts floats in a dictionary or list to Decimal """
     if isinstance(data, float):
         return Decimal(str(data))
     elif isinstance(data, list):
@@ -42,40 +42,44 @@ def convert_floats_to_decimal(data):
         return {k: convert_floats_to_decimal(v) for k, v in data.items()}
     return data
 
-def store_fingerprint(audio_fingerprint, classification):
-    if check_if_fingerprint_exists(audio_fingerprint):
-        return {"message": "Fingerprint Already Exists in DB"}
+def store_fingerprint(fingerprint, category, classification, predictions_num=None):
 
     try:
+        if predictions_num:
+            cache_key = f"{fingerprint}_{category}_{predictions_num}"
+        else:
+            cache_key = f"{fingerprint}_{category}"
         classification = convert_floats_to_decimal(classification)
 
-        table = dynamodb.Table("AudioCache")
+        table = dynamodb.Table("Audio-Cache")
         table.put_item(
             Item={
-                "fingerprint": audio_fingerprint,
+                "fingerprint": cache_key,
+                "category": category,
+                "predictions_num": predictions_num if predictions_num else 0,
                 "classification": classification,
-                "timestamp": int(time.time())
             }
         )
         return {"message": "Fingerprint Stored Successfully"}
     except Exception as e:
         return {"error": str(e)}
 
-def get_fingerprint(fingerprint :str):
+def get_fingerprint(fingerprint :str, category : str, predictions_num = None):
     try:
-        table = dynamodb.Table("AudioCache")
-        response = table.get_item(Key = {"fingerprint" : fingerprint})
+
+        if predictions_num:
+            cache_key = f"{fingerprint}_{category}_{predictions_num}"
+        else:
+            cache_key = f"{fingerprint}_{category}"
+
+        table = dynamodb.Table("Audio-Cache")
+        response = table.get_item(Key = {"fingerprint" : cache_key})
         item = response.get("Item")
         return item
     except Exception as e :
         return {"error": str(e)}
     
-def check_if_fingerprint_exists(fingerprint : str):
-    table = dynamodb.Table("AudioCache")
-    response = table.get_item(Key = {"fingerprint" : fingerprint})
-    if "Item" in response:
-        return True
-    return False
+
 
 def generate_fingerprint(audio_file):
     

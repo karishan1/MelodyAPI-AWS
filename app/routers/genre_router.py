@@ -18,12 +18,12 @@ async def predict_genre(file: UploadFile):
             raise HTTPException(status_code=500, detail="Failed to generate fingerprint")
 
         # Check if prediction exists in cache
-        cached_result = get_fingerprint(fingerprint)
+        cached_result = get_fingerprint(fingerprint,"genre")
         if cached_result:
-            print("Cache HIT: Returning cached genre prediction")
-            return {"source": "cache", "top_genre_predictions": cached_result["classification"]}
+            print("✅ Cache HIT: Returning cached genre prediction")
+            return {"top_genre_predictions": cached_result["classification"]}
         
-        print("Cache MISS: Processing audio for genre prediction")
+        print("❌ Cache MISS: Processing audio for genre prediction")
 
         embeddings = process_audio(file_location)
         predictions = predict_genre(embeddings)
@@ -31,8 +31,8 @@ async def predict_genre(file: UploadFile):
         
         result = get_top_predictions(predictions)
         print("Storing fingerprint")
-        store_fingerprint(fingerprint,result)
-        print("Fingerprint sotred in cache")        
+        store_fingerprint(fingerprint,"genre",result)
+        print("Fingerprint stored in cache")        
         return result
         
         
