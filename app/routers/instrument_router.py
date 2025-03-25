@@ -6,7 +6,7 @@ from app.utils.dynamodb_cache import generate_fingerprint, get_fingerprint, stor
 import os
 
 router = APIRouter()
-@router.post("/predict/{predictions_num}")
+@router.post("/instrument-predict/{predictions_num}")
 async def predict_instrument(predictions_num: int, file: UploadFile):
     file_location = None    
     try:

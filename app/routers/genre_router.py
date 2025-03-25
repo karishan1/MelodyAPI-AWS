@@ -7,7 +7,7 @@ from app.utils.dynamodb_cache import generate_fingerprint, get_fingerprint, stor
 import os
 
 router = APIRouter()
-@router.post("/genre")
+@router.post("/genre-predict")
 
 async def predict_genre(file: UploadFile):
     file_location = None    
