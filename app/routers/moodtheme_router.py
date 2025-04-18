@@ -6,35 +6,42 @@ from app.utils.dynamodb_cache import generate_fingerprint, get_fingerprint, stor
 
 import os
 
+# Initialize API router
 router = APIRouter()
-@router.post("/mood-theme-predict")
-async def predict_instrument(file: UploadFile):
+
+# POST endpoint for instrument prediction
+@router.post("/mood-theme-predict/{predictions_num}")
+async def predict_instrument(predictions_num: int, file: UploadFile):
     file_location = None    
     try:
-
+        # Saves file to /tmp directory
         file_location = save_uploaded_file(file)
+
+        # Generates unique fingerprint for audio file
         fingerprint = generate_fingerprint(file_location)
         if not fingerprint:
             raise HTTPException(status_code=500, detail="Failed to generate fingerprint")
 
-        # Check if prediction exists in cache
-        cached_result = get_fingerprint(fingerprint,"mood_theme")
+        # Attempts to retrieve cached result for this specific response
+        cached_result = get_fingerprint(fingerprint,"mood_theme",predictions_num)
+        # Returns cached result if available
         if cached_result:
-            print("✅ Cache HIT: Returning cached mood-theme prediction")
-            return {"top_3_predictions": cached_result["classification"]}
+            return {"top_mood_predictions": cached_result["classification"]}
         
-        print("❌ Cache MISS: Processing audio for mood-theme prediction")
-
+        # Extract audio embeddings
         embeddings = process_audio(file_location)
 
+        # Perform instrument classification
         predictions = get_mood_and_theme_predictions(embeddings)
 
-        top_3_predictions = get_top_predictions(predictions)
-        print("Storing fingerprint")
-        store_fingerprint(fingerprint,"mood_theme",top_3_predictions)
-        print("Fingerprint stored in cache")      
+        # Retrieve top N predictions
+        top_n_predictions = get_top_predictions(predictions,predictions_num)
 
-        return {"top_3_predictions": top_3_predictions}
+        # Stores fingerprint in cache for retrieval later on
+        store_fingerprint(fingerprint,"mood_theme",top_n_predictions,predictions_num)
+
+        # Return final prediction
+        return {"top_3_predictions": top_n_predictions}
 
     
     except HTTPException as http_err:

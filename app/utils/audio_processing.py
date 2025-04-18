@@ -5,7 +5,7 @@ import os
 
 def process_audio(file_path: str) -> np.ndarray:
     """
-    Load and process the audio file to extract embeddings.
+    Load and process the audio file to extract embeddings
     """
     model_path = os.path.join(os.getcwd(), "models", "discogs-effnet-bs64-1.pb")
 

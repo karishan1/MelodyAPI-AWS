@@ -6,33 +6,42 @@ from app.utils.dynamodb_cache import generate_fingerprint, get_fingerprint, stor
 
 import os
 
+# Initialise API router
 router = APIRouter()
-@router.post("/genre-predict")
 
-async def predict_genre(file: UploadFile):
+# POST endpoint for genre prediction
+@router.post("/genre-predict/{predictions_num}")
+
+async def predict_genre(predictions_num: int, file: UploadFile):
     file_location = None    
     try:
+        # Saves file to /tmp directory
         file_location = save_uploaded_file(file)
+
+        # Generates unique fingerprint for audio file 
         fingerprint = generate_fingerprint(file_location)
         if not fingerprint:
             raise HTTPException(status_code=500, detail="Failed to generate fingerprint")
 
-        # Check if prediction exists in cache
-        cached_result = get_fingerprint(fingerprint,"genre")
+        # Attempts to retrieve cached result for this specific response
+        cached_result = get_fingerprint(fingerprint,"genre",predictions_num)
+        # Returns cached result if available
         if cached_result:
-            print("✅ Cache HIT: Returning cached genre prediction")
             return {"top_genre_predictions": cached_result["classification"]}
         
-        print("❌ Cache MISS: Processing audio for genre prediction")
-
+        # Extract audio embeddings
         embeddings = process_audio(file_location)
-        predictions = predict_genre(embeddings)
+
+        # Perform genre classification
         predictions = get_genre_predictions(embeddings) 
         
-        result = get_top_predictions(predictions)
-        print("Storing fingerprint")
-        store_fingerprint(fingerprint,"genre",result)
-        print("Fingerprint stored in cache")        
+        # Retrieve top N predictions
+        result = get_top_predictions(predictions,predictions_num)
+
+        # Stores fingerprint in cache for retrieval later on 
+        store_fingerprint(fingerprint,"genre",result,predictions_num)
+
+        # Return final prediction
         return result
         
         
