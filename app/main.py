@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-#from mangum import Mangum
+from mangum import Mangum
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers.instrument_router import router as instrument_router
 from app.routers.genre_router import router as genre_router
@@ -33,5 +33,5 @@ app.include_router(moodtheme_router,prefix = "/api", tags=['Mood and Theme Predi
 
 
 
-#lambda_handler = Mangum(app)
+lambda_handler = Mangum(app)
 

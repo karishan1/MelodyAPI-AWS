@@ -10,9 +10,8 @@ app = FastAPI()
 # Connect to DynamoDB instance
 dynamodb = boto3.resource(
     "dynamodb",
-    region_name="eu-west-2",
-    endpoint_url="http://localhost:8000" # Endpoint
-)
+    region_name="eu-west-2"
+    )
 
 # Name of the DynamoDB table for caching
 table_name = "Audio-Cache"
@@ -73,7 +72,7 @@ def store_fingerprint(fingerprint, category, classification, predictions_num=Non
                 "category": category,
                 "predictions_num": predictions_num if predictions_num else 0,
                 "classification": classification,
-                "ttl": expire_at,
+                "ttl": timestamp,
             }
         )
         return {"message": "Fingerprint Stored Successfully"}
