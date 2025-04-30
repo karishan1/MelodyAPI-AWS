@@ -10,7 +10,9 @@ app = FastAPI()
 # Connect to DynamoDB instance
 dynamodb = boto3.resource(
     "dynamodb",
-    region_name="eu-west-2"
+    region_name="eu-west-2",
+    endpoint_url="http://localhost:8000" # Endpoint
+    
     )
 
 # Name of the DynamoDB table for caching
@@ -51,7 +53,7 @@ def convert_floats_to_decimal(data):
     return data
 
 # Stores a fingerprint and corresponding classification results in DynamoDB
-def store_fingerprint(fingerprint, category, classification, predictions_num=None,ttl_seconds=86400):
+def store_fingerprint(fingerprint, category, classification, predictions_num=None,ttl_seconds=20):
 
     try:
         if predictions_num:
@@ -72,7 +74,7 @@ def store_fingerprint(fingerprint, category, classification, predictions_num=Non
                 "category": category,
                 "predictions_num": predictions_num if predictions_num else 0,
                 "classification": classification,
-                "ttl": timestamp,
+                "ttl": expire_at,
             }
         )
         return {"message": "Fingerprint Stored Successfully"}

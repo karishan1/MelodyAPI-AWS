@@ -33,7 +33,7 @@ def get_top_predictions(predictions: np.ndarray, top_n: int = 3) -> list:
     top_indices = np.argsort(average_probabilities)[-top_n:][::-1]
     return [
         {
-            "Genre": genres[idx],
+            "genre": genres[idx],
             "average_probability": round(float(average_probabilities[idx]), 4)
         }
         for idx in top_indices

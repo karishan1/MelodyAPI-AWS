@@ -1,4 +1,6 @@
-from fastapi import APIRouter, UploadFile, HTTPException, File
+from fastapi import APIRouter, UploadFile, HTTPException, status, File
+from typing import Optional
+
 from app.utils.file_handling import save_uploaded_file
 from app.utils.audio_processing import process_audio
 from app.utils.predict_genre import get_genre_predictions, get_top_predictions
@@ -6,15 +8,34 @@ from app.utils.dynamodb_cache import generate_fingerprint, get_fingerprint, stor
 
 import os
 
+MAX_FILE_SIZE_MB = 3 # Max file size in MB
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024 # Max file size in Bytes
+
 # Initialise API router
 router = APIRouter()
 
 # POST endpoint for genre prediction
 @router.post("/genre-predict/{predictions_num}")
 
-async def predict_genre(predictions_num: int, file: UploadFile):
+async def predict_genre(predictions_num: int, file: Optional[UploadFile] = File(None)):
     file_location = None    
     try:
+        if not file:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No file uploaded. Please upload a valid audio file (mp3, wav, flac)."
+            )
+        
+        # Checks file size 
+        contents = await file.read()
+        if len(contents) > MAX_FILE_SIZE_BYTES:
+            raise HTTPException(
+                status_code = status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail = f"File too large. Maximum allowed size is {MAX_FILE_SIZE_MB}MB."
+            )
+        # Rewinds file after checking
+        await file.seek(0)
+
         # Saves file to /tmp directory
         file_location = save_uploaded_file(file)
 
@@ -27,6 +48,7 @@ async def predict_genre(predictions_num: int, file: UploadFile):
         cached_result = get_fingerprint(fingerprint,"genre",predictions_num)
         # Returns cached result if available
         if cached_result:
+            print("CACHE HIT")
             return {"top_genre_predictions": cached_result["classification"]}
         
         # Extract audio embeddings

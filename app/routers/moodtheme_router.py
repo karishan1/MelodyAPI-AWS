@@ -1,4 +1,6 @@
-from fastapi import APIRouter, UploadFile, HTTPException, File
+from fastapi import APIRouter, UploadFile, HTTPException, status, File
+from typing import Optional
+
 from app.utils.file_handling import save_uploaded_file
 from app.utils.audio_processing import process_audio
 from app.utils.predict_moodtheme import get_mood_and_theme_predictions, get_top_predictions
@@ -6,14 +8,34 @@ from app.utils.dynamodb_cache import generate_fingerprint, get_fingerprint, stor
 
 import os
 
+MAX_FILE_SIZE_MB = 50 # Max file size in MB
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024 # Max file size in Bytes
+
+
 # Initialize API router
 router = APIRouter()
 
 # POST endpoint for instrument prediction
 @router.post("/mood-theme-predict/{predictions_num}")
-async def predict_instrument(predictions_num: int, file: UploadFile):
+async def predict_instrument(predictions_num: int, file: Optional[UploadFile] = File(None)):
     file_location = None    
     try:
+        if not file:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No file uploaded. Please upload a valid audio file (mp3, wav, flac)."
+            )
+        
+        # Checks file size 
+        contents = await file.read()
+        if len(contents) > MAX_FILE_SIZE_BYTES:
+            raise HTTPException(
+                status_code = status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail = f"File too large. Maximum allowed size is {MAX_FILE_SIZE_MB}MB."
+            )
+        # Rewinds file after checking
+        await file.seek(0)
+        
         # Saves file to /tmp directory
         file_location = save_uploaded_file(file)
 

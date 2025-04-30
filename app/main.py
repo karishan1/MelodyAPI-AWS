@@ -1,6 +1,10 @@
-from fastapi import FastAPI
-from mangum import Mangum
+from fastapi import FastAPI, status
+#from mangum import Mangum
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from fastapi.requests import Request
+
+
 from app.routers.instrument_router import router as instrument_router
 from app.routers.genre_router import router as genre_router
 from app.routers.moodtheme_router import router as moodtheme_router
@@ -31,7 +35,12 @@ app.include_router(instrument_router, prefix="/api", tags=["Instrument Predictio
 app.include_router(genre_router,prefix = "/api", tags=['Genre Prediction'])
 app.include_router(moodtheme_router,prefix = "/api", tags=['Mood and Theme Prediction'])
 
+@app.exception_handler(404)
+async def custom_404_handler(request: Request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"detail": "The endpoint you are trying to reach does not exist. Please check the URL and try again."}
+    )
 
-
-lambda_handler = Mangum(app)
+#lambda_handler = Mangum(app)
 

@@ -33,7 +33,7 @@ def get_top_predictions(predictions: np.ndarray, top_n: int = 4) -> list:
     top_indices = np.argsort(average_probabilities)[-top_n:][::-1]
     return [
         {
-            "Genre": mood_themes[idx],
+            "mood_theme": mood_themes[idx],
             "average_probability": round(float(average_probabilities[idx]), 4)
         }
         for idx in top_indices
