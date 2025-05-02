@@ -16,7 +16,15 @@ MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024 # Max file size in Bytes
 router = APIRouter()
 
 # POST endpoint for instrument prediction
-@router.post("/mood-theme-predict/{predictions_num}")
+@router.post("/mood-theme-predict/{predictions_num}",
+            summary="Predict mood and theme from uploaded audio",
+            description="""
+                Upload an audio file and receive the top N predicted mood/theme from a machine learning model.
+
+                - Supported formats : `.mp3`, `.wav`, `.flac`
+                - Returns json format
+                - Max file size : 50MB
+            """)
 async def predict_instrument(predictions_num: int, file: Optional[UploadFile] = File(None)):
     file_location = None    
     try:

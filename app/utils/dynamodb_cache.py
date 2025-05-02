@@ -11,7 +11,6 @@ app = FastAPI()
 dynamodb = boto3.resource(
     "dynamodb",
     region_name="eu-west-2",
-    endpoint_url="http://localhost:8000" # Endpoint
     
     )
 
@@ -53,7 +52,7 @@ def convert_floats_to_decimal(data):
     return data
 
 # Stores a fingerprint and corresponding classification results in DynamoDB
-def store_fingerprint(fingerprint, category, classification, predictions_num=None,ttl_seconds=20):
+def store_fingerprint(fingerprint, category, classification, predictions_num=None,ttl_seconds=604800):
 
     try:
         if predictions_num:

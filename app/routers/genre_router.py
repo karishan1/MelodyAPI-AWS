@@ -8,14 +8,22 @@ from app.utils.dynamodb_cache import generate_fingerprint, get_fingerprint, stor
 
 import os
 
-MAX_FILE_SIZE_MB = 3 # Max file size in MB
+MAX_FILE_SIZE_MB = 50 # Max file size in MB
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024 # Max file size in Bytes
 
 # Initialise API router
 router = APIRouter()
 
 # POST endpoint for genre prediction
-@router.post("/genre-predict/{predictions_num}")
+@router.post("/genre-predict/{predictions_num}",
+            summary="Predict genre from uploaded audio",
+            description="""
+                Upload an audio file and receive the top N predicted genres from a machine learning model.
+
+                - Supported formats : `.mp3`, `.wav`, `.flac`
+                - Returns json format
+                - Max file size : 50MB
+            """)
 
 async def predict_genre(predictions_num: int, file: Optional[UploadFile] = File(None)):
     file_location = None    
@@ -50,7 +58,7 @@ async def predict_genre(predictions_num: int, file: Optional[UploadFile] = File(
         if cached_result:
             print("CACHE HIT")
             return {"top_genre_predictions": cached_result["classification"]}
-        
+        print("CACHE MISS")
         # Extract audio embeddings
         embeddings = process_audio(file_location)
 
