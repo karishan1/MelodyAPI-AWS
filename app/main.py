@@ -1,5 +1,5 @@
 from fastapi import FastAPI, status
-from mangum import Mangum
+#from mangum import Mangum   # FOR DEPLOYED SERVER
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
@@ -45,5 +45,5 @@ async def custom_404_handler(request: Request, exc):
         content={"detail": "The endpoint you are trying to reach does not exist. Please check the URL and try again."}
     )
 
-lambda_handler = Mangum(app)
+#lambda_handler = Mangum(app) # FOR DEPLOYED SERVER
 

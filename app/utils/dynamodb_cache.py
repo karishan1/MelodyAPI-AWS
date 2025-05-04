@@ -11,7 +11,7 @@ app = FastAPI()
 dynamodb = boto3.resource(
     "dynamodb",
     region_name="eu-west-2",
-    
+    endpoint_url="http://localhost:8000" # COMMENT THIS OUT FOR DEPLOYED SERVER
     )
 
 # Name of the DynamoDB table for caching
