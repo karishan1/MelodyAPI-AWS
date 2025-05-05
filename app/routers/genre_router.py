@@ -20,7 +20,7 @@ router = APIRouter()
             description="""
                 Upload an audio file and receive the top N predicted genres from a machine learning model.
 
-                - Supported formats : `.mp3`, `.wav`, `.flac`
+                - Supported formats : .mp3, .wav, .flac
                 - Returns json format
                 - Max file size : 50MB
             """)
